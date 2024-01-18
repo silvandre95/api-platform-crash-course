@@ -4,12 +4,11 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
-use App\State\DeleteManufacturerProcessor;
+use App\State\PatchProductProcessor;
 use App\Validator\AssertCanDeleteManufacturer;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use ApiPlatform\Metadata\Get;
@@ -22,10 +21,10 @@ use ApiPlatform\Metadata\GetCollection;
             new Get(security: 'is_granted("ROLE_ADMIN")'),
             new GetCollection(security: 'is_granted("ROLE_ADMIN")'),
             new Delete(validate: true)
-        ]
+        ],
+        security: "is_granted('ROLE_ADMIN')"
 )]
 #[AssertCanDeleteManufacturer]
-#[IsGranted('ROLE_USER')]
 class Manufacturer
 {
     /** The id of manufacturer */

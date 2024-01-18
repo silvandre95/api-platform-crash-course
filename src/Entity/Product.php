@@ -14,6 +14,7 @@ use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use App\State\PatchProductProcessor;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
@@ -33,7 +34,8 @@ use Symfony\Component\Validator\Constraints as Assert;
         /** From the application to the requester */
         normalizationContext: ['groups' => 'product.read'],
         /** From the requester to the application */
-        denormalizationContext: ['groups' => 'product.write']
+        denormalizationContext: ['groups' => 'product.write'],
+        security: "is_granted('ROLE_ADMIN')"
     ),
     ApiFilter(
         SearchFilter::class,
@@ -92,15 +94,13 @@ class Product
 
     /** The date of issue of the product.*/
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[
-        Assert\NotNull,
-        Groups(['product.read'])
-    ]
+    #[Assert\NotNull]
+    #[Groups(['product.read', 'product.write'])]
     private ?\DateTimeInterface $issueDate = null;
 
     /** The manufacturer of the product. */
     #[ORM\ManyToOne(targetEntity: 'Manufacturer', inversedBy: 'products')]
-    #[Groups(['product.read'])]
+    #[Groups(['product.read', 'product.write'])]
     private ?Manufacturer $manufacturer = null;
 
     #[ORM\ManyToOne(inversedBy: 'products')]
